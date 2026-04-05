@@ -7,14 +7,44 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Properties;
 
 public class EncryptionService {
 
-    private static final String SECRET = "1234567890123456";
+    private static final String SECRET = loadSecret();
+
+    private static String loadSecret() {
+        try (InputStream inputStream = EncryptionService.class.getClassLoader()
+                .getResourceAsStream("application.properties")) {
+
+            if (inputStream == null) {
+                throw new RuntimeException("application.properties not found");
+            }
+
+            Properties properties = new Properties();
+            properties.load(inputStream);
+
+            String secret = properties.getProperty("encryption.secret");
+
+            if (secret == null || secret.isBlank()) {
+                throw new RuntimeException("encryption.secret is missing");
+            }
+
+            if (secret.length() != 16 && secret.length() != 24 && secret.length() != 32) {
+                throw new RuntimeException("encryption.secret must be 16, 24, or 32 characters long");
+            }
+
+            return secret;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load encryption secret", e);
+        }
+    }
+
 
     private SecretKey getKey() {
         return new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), "AES");
