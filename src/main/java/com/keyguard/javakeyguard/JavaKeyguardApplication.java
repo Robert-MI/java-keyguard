@@ -9,5 +9,4 @@ public class JavaKeyguardApplication {
     public static void main(String[] args) {
         SpringApplication.run(JavaKeyguardApplication.class, args);
     }
-
 }
