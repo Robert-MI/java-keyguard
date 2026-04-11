@@ -92,32 +92,32 @@ public class ReconstructionService {
         SHIFT_PUNCTUATION_MAP.put(NativeKeyEvent.VC_BACKQUOTE, '~');
     }
 
-    public String handleKeyPressed(NativeKeyEvent e) {
+    public void handleKeyPressed(NativeKeyEvent e) {
         int keyCode = e.getKeyCode();
         boolean shiftDown = (e.getModifiers() & NativeInputEvent.SHIFT_MASK) != 0;
 
         if (keyCode == NativeKeyEvent.VC_CAPS_LOCK) {
             capsLockOn = !capsLockOn;
-            return buffer.toString();
+            return;
         }
 
         if (keyCode == NativeKeyEvent.VC_BACKSPACE) {
             if (!buffer.isEmpty()) {
                 buffer.deleteCharAt(buffer.length() - 1);
             }
-            return buffer.toString();
+            return;
         }
 
         if (keyCode == NativeKeyEvent.VC_SPACE) {
             buffer.append(' ');
-            return buffer.toString();
+            return;
         }
 
         if (LETTER_MAP.containsKey(keyCode)) {
             char baseChar = LETTER_MAP.get(keyCode);
             boolean uppercase = shiftDown ^ capsLockOn;
             buffer.append(uppercase ? Character.toUpperCase(baseChar) : baseChar);
-            return buffer.toString();
+            return;
         }
 
         if (DIGIT_MAP.containsKey(keyCode)) {
@@ -125,7 +125,7 @@ public class ReconstructionService {
                     ? SHIFT_DIGIT_MAP.get(keyCode)
                     : DIGIT_MAP.get(keyCode);
             buffer.append(ch);
-            return buffer.toString();
+            return;
         }
 
         if (PUNCTUATION_MAP.containsKey(keyCode)) {
@@ -133,16 +133,18 @@ public class ReconstructionService {
                     ? SHIFT_PUNCTUATION_MAP.get(keyCode)
                     : PUNCTUATION_MAP.get(keyCode);
             buffer.append(ch);
-            return buffer.toString();
         }
 
-        return buffer.toString();
     }
 
-    public void handleKeyReleased(NativeKeyEvent e) {
+    public void handleKeyReleased() {
     }
 
     public String getCurrentText() {
         return buffer.toString();
+    }
+
+    public void reset() {
+        buffer.setLength(0);
     }
 }

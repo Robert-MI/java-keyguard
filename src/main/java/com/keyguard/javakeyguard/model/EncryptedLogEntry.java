@@ -1,25 +1,16 @@
 package com.keyguard.javakeyguard.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EncryptedLogEntry {
-    private Long id;
-    private String timestamp;
+    private Long timestamp;
     private String context;
-    private String source;
     private String encryptedPayload;
-
-    public EncryptedLogEntry() {
-    }
-
-    public EncryptedLogEntry(Long id, String timestamp, String context, String source, String encryptedPayload) {
-        this.id = id;
-        this.timestamp = timestamp;
-        this.context = context;
-        this.source = source;
-        this.encryptedPayload = encryptedPayload;
-    }
 }

@@ -83,19 +83,18 @@ public class EncryptionService {
         }
 
         try {
-            String finalResult = "";
+            System.out.println("Final decrypted results:");
 
             for (String line : Files.readAllLines(path)) {
-                if (line.isBlank()) {
+                if (line == null || line.isBlank()) {
                     continue;
                 }
 
                 EncryptedLogEntry entry = objectMapper.readValue(line, EncryptedLogEntry.class);
-                finalResult = decrypt(entry.getEncryptedPayload());
-            }
+                String decrypted = decrypt(entry.getEncryptedPayload());
 
-            System.out.println("Final decrypted result:");
-            System.out.println(finalResult.isBlank() ? "[empty]" : finalResult);
+                System.out.println(entry.getContext() + " -> " + decrypted);
+            }
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to read encrypted log file", e);
