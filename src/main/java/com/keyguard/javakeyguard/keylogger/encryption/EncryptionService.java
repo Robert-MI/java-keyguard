@@ -2,102 +2,73 @@ package com.keyguard.javakeyguard.keylogger.encryption;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keyguard.javakeyguard.model.EncryptedLogEntry;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.Properties;
+import java.util.stream.Stream;
 
+@Service
 public class EncryptionService {
 
-    private static final String SECRET = loadSecret();
+    @Value("${encryption.secret}")
+    private String secret;
 
-    private static String loadSecret() {
-        try (InputStream inputStream = EncryptionService.class.getClassLoader()
-                .getResourceAsStream("application.properties")) {
+    private static final String ALGORITHM = "AES";
 
-            if (inputStream == null) {
-                throw new RuntimeException("application.properties not found");
-            }
-
-            Properties properties = new Properties();
-            properties.load(inputStream);
-
-            String secret = properties.getProperty("encryption.secret");
-
-            if (secret == null || secret.isBlank()) {
-                throw new RuntimeException("encryption.secret is missing");
-            }
-
-            if (secret.length() != 16 && secret.length() != 24 && secret.length() != 32) {
-                throw new RuntimeException("encryption.secret must be 16, 24, or 32 characters long");
-            }
-
-            return secret;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load encryption secret", e);
-        }
-    }
-
-
-    private SecretKey getKey() {
-        return new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), "AES");
+    private SecretKeySpec getKey() {
+        return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), ALGORITHM);
     }
 
     public String encrypt(String plainText) {
+        if (plainText == null) return "";
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, getKey());
-            byte[] encryptedBytes = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(encryptedBytes);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             throw new RuntimeException("Encryption failed", e);
         }
     }
 
     public String decrypt(String encryptedText) {
+        if (encryptedText == null) return "";
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, getKey());
-            byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
-            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-            return new String(decryptedBytes, StandardCharsets.UTF_8);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedText)), StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Decryption failed", e);
         }
     }
 
     public void printDecryptedLogFile(String logFilePath) {
-        ObjectMapper objectMapper = new ObjectMapper();
         Path path = Path.of(logFilePath);
-
         if (!Files.exists(path)) {
-            System.out.println("No log file found to decrypt.");
             return;
         }
 
-        try {
-            System.out.println("Final decrypted results:");
+        ObjectMapper objectMapper = new ObjectMapper();
 
-            for (String line : Files.readAllLines(path)) {
-                if (line == null || line.isBlank()) {
-                    continue;
-                }
-
-                EncryptedLogEntry entry = objectMapper.readValue(line, EncryptedLogEntry.class);
-                String decrypted = decrypt(entry.getEncryptedPayload());
-
-                System.out.println(entry.getContext() + " -> " + decrypted);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read encrypted log file", e);
+        try (Stream<String> lines = Files.lines(path)) {
+            lines.filter(line -> !line.isBlank())
+                    .forEach(line -> {
+                        try {
+                            EncryptedLogEntry entry = objectMapper.readValue(line, EncryptedLogEntry.class);
+                            System.out.printf("%s -> %s%n",
+                                    decrypt(entry.getEncryptedContext()),
+                                    decrypt(entry.getEncryptedPayload()));
+                        } catch (Exception e) {
+                            System.err.println("Error parsing log line: " + e.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read log file", e);
         }
     }
 }

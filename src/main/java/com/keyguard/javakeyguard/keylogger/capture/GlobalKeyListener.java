@@ -18,11 +18,6 @@ public class GlobalKeyListener implements NativeKeyListener {
     }
 
     @Override
-    public void nativeKeyReleased(NativeKeyEvent e) {
-        keyloggerRunner.handleKeyReleased();
-    }
-
-    @Override
     public void nativeKeyTyped(NativeKeyEvent e) {
     }
 }

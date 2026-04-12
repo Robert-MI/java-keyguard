@@ -2,11 +2,13 @@ package com.keyguard.javakeyguard.keylogger.storage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keyguard.javakeyguard.model.EncryptedLogEntry;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+@Service
 public class LogStorageService {
 
     private static final String LOG_FILE_PATH = "logs/encrypted-log.ndjson";

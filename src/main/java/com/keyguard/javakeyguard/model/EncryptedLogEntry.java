@@ -10,7 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EncryptedLogEntry {
-    private Long timestamp;
-    private String context;
+    private Long id;
+    private String timestamp;
+    private String encryptedContext;
     private String encryptedPayload;
 }

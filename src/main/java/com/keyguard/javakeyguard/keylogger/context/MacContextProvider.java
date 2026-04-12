@@ -1,8 +1,11 @@
 package com.keyguard.javakeyguard.keylogger.context;
 
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+@Service
 public class MacContextProvider {
 
     public String getActiveApplication() {
