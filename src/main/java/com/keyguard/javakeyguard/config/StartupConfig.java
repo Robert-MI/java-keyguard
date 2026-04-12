@@ -52,7 +52,7 @@ public class StartupConfig {
             Thread timerThread = new Thread(() -> {
                 try {
                     Thread.sleep(delay);
-                    System.out.println("Scheduled shutdown triggered...");
+//                    System.out.println("Scheduled shutdown triggered...");
                     System.exit(0);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

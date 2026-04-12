@@ -60,9 +60,9 @@ public class EncryptionService {
                     .forEach(line -> {
                         try {
                             EncryptedLogEntry entry = objectMapper.readValue(line, EncryptedLogEntry.class);
-                            System.out.printf("%s -> %s%n",
-                                    decrypt(entry.getEncryptedContext()),
-                                    decrypt(entry.getEncryptedPayload()));
+//                            System.out.printf("%s -> %s%n",
+//                                    decrypt(entry.getEncryptedContext()),
+//                                    decrypt(entry.getEncryptedPayload()));
                         } catch (Exception e) {
                             System.err.println("Error parsing log line: " + e.getMessage());
                         }

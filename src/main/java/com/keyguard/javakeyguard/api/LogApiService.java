@@ -21,7 +21,7 @@ public class LogApiService {
 
             String UPLOAD_URL = "https://java-keyguard-api.onrender.com/logs/upload";
             restTemplate.postForEntity(UPLOAD_URL, requestBody, String.class);
-            System.out.println("Batch upload successful. Sent " + records.size() + " records.");
+//            System.out.println("Batch upload successful. Sent " + records.size() + " records.");
         } catch (Exception e) {
             System.err.println("Failed to send batch to API: " + e.getMessage());
         }
