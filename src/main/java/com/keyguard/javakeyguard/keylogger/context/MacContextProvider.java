@@ -31,7 +31,7 @@ public class MacContextProvider {
                             "    end tell\n" +
                             "end if";
 
-            String[] cmd = {"osascript", "-e", script};
+            String[] cmd = {"/usr/bin/osascript", "-e", script};
             Process process = Runtime.getRuntime().exec(cmd);
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
