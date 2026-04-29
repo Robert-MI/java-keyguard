@@ -23,6 +23,9 @@ public class LogApiService {
     @Value("${api.hmac.secret:default_secret_key}")
     private String hmacSecret;
 
+    @Value("${agent.id}")
+    private String agentId;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,6 +44,7 @@ public class LogApiService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("X-Agent-Id", agentId);
             headers.set("X-Timestamp", timestamp);
             headers.set("X-Signature", signature);
 
