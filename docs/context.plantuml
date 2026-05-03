@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Context>
+
+
+
+title Keyguard Distributed Keylogger - System Context Diagram
+
+Person(user, "User/Target", "The person whose computer is being logged. Uses CLI for config, types on keyboard, uses Web to view logs.")
+
+System(keyguard, "Keyguard Keylogger System", "An end-to-end distributed system designed to capture, encrypt, store, and visualize keystrokes from target machines.")
+
+' The boundary of the operating system
+System_Ext(hostOs, "Host Operating System", "macOS or Linux. The runtime environment that manages hardware and provides raw input events.")
+
+' Define Relationships
+Rel(user, keyguard, "Installs, Configures via CLI, Views Logs via Web", "HTTPS/CLI", $tags="https+cli")
+Rel(user, hostOs, "Types on Keyboard (generates native input events)", "Hardware Input")
+
+' Bidirectional interaction between app and OS
+BiRel_D(keyguard, hostOs, "Reads raw inputs, Queries active window context (e.g., via osascript/xdotool)", "Native APIs/Process Execution", $tags="os_int")
+
+' Layout hints to clean up the output
+Lay_D(user, keyguard)
+Lay_R(keyguard, hostOs)
+
+@enduml

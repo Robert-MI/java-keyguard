@@ -1,0 +1,44 @@
+@startuml
+!include <C4/C4_Container>
+
+title Keyguard Distributed Keylogger - Container Diagram
+
+Person(user, "User/Target", "Interacts with the system via CLI (on host) and Web Application (in browser).")
+
+System_Boundary(keyguard_system, "Keyguard Keylogger System") {
+
+    ' --- The CLI AGENT Container ---
+    Container(cli_agent, "Keyguard CLI Agent", "Java/GraalVM Native Binary", "Installed locally. Runs in background. Parses user commands, reconstructs keystrokes, ENCRYPTS data locally, and uploads batches.")
+
+    ' --- The WEB APPLICATION Container ---
+    Container(web_app, "Keyguard Web Dashboard", "JavaScript, React (SPA)", "Delivered via browser. Visualizes logs. Contains client-side logic to DECRYPT logs locally using user's passphrase.")
+
+    ' --- The API APPLICATION Container ---
+    Container(api_app, "Keyguard Backend API", "Java, Spring Boot", "Central server handling authentication, multi-tenant logic, and CRUD operations for ENCRYPTED log data.")
+
+    ' --- The DATABASE Container ---
+    ContainerDb(database, "Keyguard Database", "Relational (e.g., PostgreSQL)", "Stores user accounts (hashed credentials), device metadata, and the ENCRYPTED log payloads.")
+}
+
+' External Dependencies
+System_Ext(host_os, "Host Operating System", "macOS or Linux. Required by CLI for input capture.")
+
+' --- Define Relationships ---
+
+' User Interactions (Requested by prompt)
+Rel(user, cli_agent, "Runs configuration/control commands (e.g., `keyguard start`) and generates keystrokes.", "CLI Commands/Input")
+Rel(user, web_app, "Logs into dashboard, provides decryption secret, visualizes logs.", "HTTPS", $tags="https_www")
+
+' CLI -> OS Interaction
+BiRel_D(cli_agent, host_os, "Captures low-level inputs, requests active window context (JNativeHook/Process Exec)", "Native OS APIs", $tags="os_int")
+
+' CLI -> API Interaction (The Encryption Path)
+Rel(cli_agent, api_app, "Authenticates and uploads BATCHED and ENCRYPTED keystroke records.", "JSON/HTTPS", $tags="encrypted")
+
+' Web App -> API Interaction (The Decryption Path)
+Rel(web_app, api_app, "Fetches ENCRYPTED logs.", "JSON/HTTPS", $tags="https_api")
+
+' API -> DB Interaction
+Rel_D(api_app, database, "Reads/writes user data and encrypted payloads.", "JDBC/SQL", $tags="db_sql")
+
+@enduml
